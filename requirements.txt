@@ -1,0 +1,24 @@
+# Core dependencies
+pyyaml>=6.0
+
+# LLM providers (install as needed)
+openai>=1.0.0  # For OpenAI GPT models
+anthropic>=0.18.0  # For Anthropic Claude models
+
+# Database
+sqlite3  # Built-in with Python
+
+# Optional: Web search (choose one or implement your own)
+# googlesearch-python>=1.2.3
+# requests>=2.31.0
+
+# Development dependencies
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.0.0
+
+# Optional: For advanced features
+# numpy>=1.24.0  # For similarity calculations
+# sentence-transformers>=2.2.0  # For semantic search
+# faiss-cpu>=1.7.4  # For vector search
