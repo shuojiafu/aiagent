@@ -113,10 +113,23 @@ print(response)
 ## Configuration
 
 Edit `config/config.yaml` to customize:
-- LLM settings (model, temperature, etc.)
+- Azure OpenAI settings (endpoint, deployment, API version, etc.)
 - Database connection
 - Web search parameters
 - Strategy generation settings
+
+To use Azure OpenAI, set the following environment variables:
+```bash
+export AZURE_OPENAI_API_KEY=your_api_key
+export AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+export AZURE_OPENAI_DEPLOYMENT_NAME=your-deployment-name
+```
+
+Then update `config/config.yaml`:
+```yaml
+llm:
+  provider: "azure"  # Change from "mock" to "azure"
+```
 
 ## Use Case
 

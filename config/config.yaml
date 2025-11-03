@@ -1,13 +1,15 @@
 # Water Trust Chatbot Configuration
 
-# LLM Configuration
+# Azure OpenAI Configuration
 llm:
-  provider: "mock"  # Options: "openai", "anthropic", "mock"
-  model: "gpt-4"    # For OpenAI: "gpt-4", "gpt-3.5-turbo"; For Anthropic: "claude-3-sonnet-20240229"
-  api_key: null     # Set via environment variable or here
+  provider: "mock"  # Options: "azure", "mock"
+  # Azure OpenAI Settings (configure when using 'azure' provider)
+  api_key: null  # Set via AZURE_OPENAI_API_KEY environment variable
+  endpoint: null  # Set via AZURE_OPENAI_ENDPOINT environment variable (e.g., https://your-resource.openai.azure.com/)
+  deployment_name: null  # Set via AZURE_OPENAI_DEPLOYMENT_NAME environment variable
+  api_version: "2024-02-15-preview"
   temperature: 0.7
   max_tokens: 2000
-  primary_model: "gpt-4"
 
 # Database Configuration
 database:

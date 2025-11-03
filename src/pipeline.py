@@ -53,11 +53,19 @@ class WaterTrustChatbot:
         """Initialize all pipeline components"""
         # Initialize LLM clients
         llm_config = self.config.get('llm', {})
-        self.llm_client = create_llm_client(
-            provider=llm_config.get('provider', 'mock'),
-            model=llm_config.get('model', 'gpt-4'),
-            api_key=llm_config.get('api_key')
-        )
+        provider = llm_config.get('provider', 'mock')
+
+        # Build kwargs based on provider
+        if provider == 'azure':
+            self.llm_client = create_llm_client(
+                provider='azure',
+                api_key=llm_config.get('api_key'),
+                endpoint=llm_config.get('endpoint'),
+                deployment_name=llm_config.get('deployment_name'),
+                api_version=llm_config.get('api_version', '2024-02-15-preview')
+            )
+        else:  # mock
+            self.llm_client = create_llm_client(provider='mock')
 
         # Initialize database
         db_path = self.config.get('database.path', 'data/water_facts.db')

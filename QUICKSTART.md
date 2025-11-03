@@ -41,41 +41,30 @@ response = chatbot.answer_question("Is my tap water safe to drink?")
 print(response['answer'])
 ```
 
-### Option 2: Using OpenAI
+### Option 2: Using Azure OpenAI
 
 ```python
 from src.pipeline import create_chatbot
+import os
 
-# Set your API key in .env or pass directly
-# OPENAI_API_KEY=sk-...
+# Set your Azure OpenAI credentials in .env or environment variables
+# AZURE_OPENAI_API_KEY=your_key
+# AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+# AZURE_OPENAI_DEPLOYMENT_NAME=your-deployment-name
 
-# Create chatbot with OpenAI
+# Or set them programmatically
+os.environ['AZURE_OPENAI_API_KEY'] = 'your_key'
+os.environ['AZURE_OPENAI_ENDPOINT'] = 'https://your-resource.openai.azure.com/'
+os.environ['AZURE_OPENAI_DEPLOYMENT_NAME'] = 'your-deployment-name'
+
+# Create chatbot with Azure OpenAI
 chatbot = create_chatbot(config_path="config/config.yaml")
 
-# Update config to use OpenAI
-chatbot.config.set('llm.provider', 'openai')
-chatbot.config.set('llm.model', 'gpt-4')
+# Update config to use Azure
+chatbot.config.set('llm.provider', 'azure')
 
 # Ask questions
 response = chatbot.answer_question("Why does my water taste like chlorine?")
-print(response['answer'])
-```
-
-### Option 3: Using Anthropic Claude
-
-```python
-from src.pipeline import create_chatbot
-
-# Set your API key in .env
-# ANTHROPIC_API_KEY=sk-ant-...
-
-# Create and configure chatbot
-chatbot = create_chatbot(config_path="config/config.yaml")
-chatbot.config.set('llm.provider', 'anthropic')
-chatbot.config.set('llm.model', 'claude-3-sonnet-20240229')
-
-# Ask questions
-response = chatbot.answer_question("Is fluoride in water safe?")
 print(response['answer'])
 ```
 
@@ -113,8 +102,9 @@ Edit `config/config.yaml` to customize:
 
 ```yaml
 llm:
-  provider: "mock"  # Change to "openai" or "anthropic"
-  model: "gpt-4"
+  provider: "mock"  # Change to "azure" for production use
+  endpoint: null  # Set your Azure endpoint
+  deployment_name: null  # Set your deployment name
   temperature: 0.7
 
 merger:
@@ -243,7 +233,7 @@ python -c "from src.utils.database import setup_database; setup_database('data/w
 ## Next Steps
 
 1. **Customize for your use case:** Add local water data to database
-2. **Integrate with real LLM:** Set up OpenAI or Anthropic API
+2. **Integrate with Azure OpenAI:** Set up Azure OpenAI API credentials
 3. **Add web search:** Implement actual web search client
 4. **Deploy:** Create web interface or API endpoint
 5. **Monitor:** Add logging and analytics

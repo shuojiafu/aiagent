@@ -31,10 +31,9 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "pyyaml>=6.0",
+        "openai>=1.0.0",  # Required for Azure OpenAI
     ],
     extras_require={
-        "openai": ["openai>=1.0.0"],
-        "anthropic": ["anthropic>=0.18.0"],
         "dev": [
             "pytest>=7.4.0",
             "pytest-cov>=4.1.0",

@@ -1,6 +1,6 @@
 """
 LLM Client Utilities
-Provides unified interface for various LLM providers
+Provides interface for Azure OpenAI API
 """
 
 from typing import Dict, Any, Optional
@@ -15,85 +15,66 @@ class BaseLLMClient:
         raise NotImplementedError
 
 
-class OpenAIClient(BaseLLMClient):
-    """OpenAI API client"""
+class AzureOpenAIClient(BaseLLMClient):
+    """Azure OpenAI API client"""
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4"):
+    def __init__(self,
+                 api_key: Optional[str] = None,
+                 endpoint: Optional[str] = None,
+                 deployment_name: Optional[str] = None,
+                 api_version: str = "2024-02-15-preview"):
         """
-        Initialize OpenAI client
+        Initialize Azure OpenAI client
 
         Args:
-            api_key: OpenAI API key (or set OPENAI_API_KEY env var)
-            model: Model name to use
+            api_key: Azure OpenAI API key (or set AZURE_OPENAI_API_KEY env var)
+            endpoint: Azure OpenAI endpoint (or set AZURE_OPENAI_ENDPOINT env var)
+            deployment_name: Deployment name (or set AZURE_OPENAI_DEPLOYMENT_NAME env var)
+            api_version: API version to use
         """
-        self.api_key = api_key or os.getenv('OPENAI_API_KEY')
-        self.model = model
+        self.api_key = api_key or os.getenv('AZURE_OPENAI_API_KEY')
+        self.endpoint = endpoint or os.getenv('AZURE_OPENAI_ENDPOINT')
+        self.deployment_name = deployment_name or os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+        self.api_version = api_version
 
         if not self.api_key:
-            raise ValueError("OpenAI API key required")
+            raise ValueError("Azure OpenAI API key required. Set AZURE_OPENAI_API_KEY environment variable.")
+
+        if not self.endpoint:
+            raise ValueError("Azure OpenAI endpoint required. Set AZURE_OPENAI_ENDPOINT environment variable.")
+
+        if not self.deployment_name:
+            raise ValueError("Azure OpenAI deployment name required. Set AZURE_OPENAI_DEPLOYMENT_NAME environment variable.")
 
         try:
-            import openai
-            self.client = openai.OpenAI(api_key=self.api_key)
+            from openai import AzureOpenAI
+            self.client = AzureOpenAI(
+                api_key=self.api_key,
+                api_version=self.api_version,
+                azure_endpoint=self.endpoint
+            )
         except ImportError:
             raise ImportError("openai package required. Install with: pip install openai")
 
     def generate(self, prompt: str, temperature: float = 0.7, max_tokens: int = 1000) -> str:
-        """Generate text using OpenAI API"""
+        """Generate text using Azure OpenAI API"""
         try:
             response = self.client.chat.completions.create(
-                model=self.model,
+                model=self.deployment_name,  # Azure uses deployment name as model
                 messages=[{"role": "user", "content": prompt}],
                 temperature=temperature,
                 max_tokens=max_tokens
             )
             return response.choices[0].message.content
         except Exception as e:
-            raise Exception(f"OpenAI API error: {str(e)}")
-
-
-class AnthropicClient(BaseLLMClient):
-    """Anthropic Claude API client"""
-
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-sonnet-20240229"):
-        """
-        Initialize Anthropic client
-
-        Args:
-            api_key: Anthropic API key (or set ANTHROPIC_API_KEY env var)
-            model: Model name to use
-        """
-        self.api_key = api_key or os.getenv('ANTHROPIC_API_KEY')
-        self.model = model
-
-        if not self.api_key:
-            raise ValueError("Anthropic API key required")
-
-        try:
-            import anthropic
-            self.client = anthropic.Anthropic(api_key=self.api_key)
-        except ImportError:
-            raise ImportError("anthropic package required. Install with: pip install anthropic")
-
-    def generate(self, prompt: str, temperature: float = 0.7, max_tokens: int = 1000) -> str:
-        """Generate text using Anthropic API"""
-        try:
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                messages=[{"role": "user", "content": prompt}]
-            )
-            return response.content[0].text
-        except Exception as e:
-            raise Exception(f"Anthropic API error: {str(e)}")
+            raise Exception(f"Azure OpenAI API error: {str(e)}")
 
 
 class MockLLMClient(BaseLLMClient):
-    """Mock LLM client for testing"""
+    """Mock LLM client for testing without Azure API"""
 
-    def __init__(self, model: str = "mock"):
-        self.model = model
+    def __init__(self):
+        self.model = "mock"
 
     def generate(self, prompt: str, temperature: float = 0.7, max_tokens: int = 1000) -> str:
         """Generate mock response"""
@@ -124,17 +105,15 @@ def create_llm_client(provider: str = "mock", **kwargs) -> BaseLLMClient:
     Factory function to create LLM client
 
     Args:
-        provider: LLM provider name ('openai', 'anthropic', 'mock')
+        provider: LLM provider name ('azure' or 'mock')
         **kwargs: Additional arguments for client initialization
 
     Returns:
         Initialized LLM client
     """
-    if provider.lower() == "openai":
-        return OpenAIClient(**kwargs)
-    elif provider.lower() == "anthropic":
-        return AnthropicClient(**kwargs)
+    if provider.lower() == "azure":
+        return AzureOpenAIClient(**kwargs)
     elif provider.lower() == "mock":
         return MockLLMClient(**kwargs)
     else:
-        raise ValueError(f"Unknown provider: {provider}. Available: openai, anthropic, mock")
+        raise ValueError(f"Unknown provider: {provider}. Available: azure, mock")
