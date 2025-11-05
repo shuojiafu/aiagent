@@ -89,6 +89,7 @@ aiagent/
 ```
 
 ### Pipeline structure
+```
 User Question → answer_question()
      │
      ├─ Check Cache → return if exists
@@ -106,6 +107,7 @@ User Question → answer_question()
      │
      ├─ Cache result
      └─ Return answer as JSON-like dictionary
+```
 
 
 ## Installation
