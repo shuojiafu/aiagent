@@ -88,6 +88,26 @@ aiagent/
 └── README.md
 ```
 
+Pipeline structure
+User Question → answer_question()
+     │
+     ├─ Check Cache → return if exists
+     │
+     ├─ QHM (Question Handling Module)
+     │     ├─ SQL Fact Retrieval (local DB)
+     │     └─ Web Retrieval (optional)
+     │
+     ├─ SMM (Strategy Maintenance Module)
+     │     ├─ Generate strategies using LLM
+     │     ├─ Extract useful strategies
+     │     └─ Fact-check & rank strategies
+     │
+     ├─ Response Merger → Final Answer
+     │
+     ├─ Cache result
+     └─ Return answer as JSON-like dictionary
+
+
 ## Installation
 
 ```bash
