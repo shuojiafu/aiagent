@@ -88,7 +88,7 @@ aiagent/
 └── README.md
 ```
 
-Pipeline structure
+### Pipeline structure
 User Question → answer_question()
      │
      ├─ Check Cache → return if exists
